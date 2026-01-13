@@ -48,7 +48,7 @@
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
-    "@types/node": "^24.10.7",
+    "@types/node": "^25.0.7",
     "@vitest/coverage-v8": "^4.0.17",
     "make-coverage-badge": "^1.2.0",
     "oxlint": "^1.39.0",
