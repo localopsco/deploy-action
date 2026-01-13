@@ -1,4 +1,4 @@
-'*.{md}':
+'*.{md,yml,yaml,json}':
   - prettier --write
 
 '*.{js,ts}':
