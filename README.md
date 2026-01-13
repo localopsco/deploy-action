@@ -12,6 +12,7 @@ steps:
   - name: Trigger Deployment
     uses: localopsco/deploy-action@v1
     with:
+      api_token: ${{ secrets.LOCALOPS_API_TOKEN }}
       environment_id: 'env-123'
       service_id: 'svc-456'
       # One of the following is required:
