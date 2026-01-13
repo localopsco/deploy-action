@@ -32,7 +32,7 @@ steps:
 | `environment_id`     | The environment ID for deployment | **Yes**  |                           |
 | `service_id`         | The service ID for deployment     | **Yes**  |                           |
 | `commit_id`          | The commit ID to deploy           | No\*     |                           |
-| `docker_image_tag`   | The docker image tag to deploy    | No\*     |                           |
+| `docker_image_tag`   | The Docker image tag to deploy    | No\*     |                           |
 | `helm_chart_version` | The helm chart version to deploy  | No\*     |                           |
 | `base_url`           | The base URL of the API           | No       | `https://sdk.localops.co` |
 
