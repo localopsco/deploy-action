@@ -35,7 +35,9 @@ describe('Action Main', () => {
     })
 
     await run()
-    expect(core.setFailed).toHaveBeenCalledWith('Input required and not supplied: api_token')
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'Input required and not supplied: api_token'
+    )
   })
 
   it('fails if no body input is provided', async () => {

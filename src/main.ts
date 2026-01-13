@@ -13,7 +13,9 @@ export async function run(): Promise<void> {
     const helmChartVersion = core.getInput('helm_chart_version')
 
     if (!commitId && !dockerImageTag && !helmChartVersion) {
-      throw new Error('One of commit_id, docker_image_tag, or helm_chart_version must be provided.')
+      throw new Error(
+        'One of commit_id, docker_image_tag, or helm_chart_version must be provided.'
+      )
     }
 
     const payload: Record<string, string> = {}

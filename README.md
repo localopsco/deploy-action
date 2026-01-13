@@ -28,6 +28,7 @@ steps:
 
 | Input                | Description                       | Required | Default                   |
 | -------------------- | --------------------------------- | -------- | ------------------------- |
+| `api_token`          | The API token for authentication  | **Yes**  |                           |
 | `environment_id`     | The environment ID for deployment | **Yes**  |                           |
 | `service_id`         | The service ID for deployment     | **Yes**  |                           |
 | `commit_id`          | The commit ID to deploy           | No\*     |                           |
@@ -35,8 +36,8 @@ steps:
 | `helm_chart_version` | The helm chart version to deploy  | No\*     |                           |
 | `base_url`           | The base URL of the API           | No       | `https://sdk.localops.co` |
 
-\* **Note**: Exactly one of `commit_id`, `docker_image_tag`, or `helm_chart_version` must be
-provided.
+\* **Note**: Exactly one of `commit_id`, `docker_image_tag`, or
+`helm_chart_version` must be provided.
 
 ## Development
 
