@@ -10,7 +10,7 @@ GitHub Action to trigger a deployment in LocalOps deliver.
 ```yaml
 steps:
   - name: Trigger Deployment
-    uses: localopsco/deploy-action@v1
+    uses: localopsco/deploy-action@v0
     with:
       api_token: ${{ secrets.LOCALOPS_API_TOKEN }}
       environment_id: 'env-123'
