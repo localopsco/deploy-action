@@ -1,27 +1,40 @@
 import * as core from '@actions/core'
-import { wait } from './wait.js'
+import ky from 'ky'
 
-/**
- * The main function for the action.
- *
- * @returns Resolves when the action is complete.
- */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const baseUrl = core.getInput('base_url')
+    const environmentId = core.getInput('environment_id', { required: true })
+    const serviceId = core.getInput('service_id', { required: true })
+    const apiToken = core.getInput('api_token', { required: true })
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const commitId = core.getInput('commit_id')
+    const dockerImageTag = core.getInput('docker_image_tag')
+    const helmChartVersion = core.getInput('helm_chart_version')
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    if (!commitId && !dockerImageTag && !helmChartVersion) {
+      throw new Error(
+        'One of commit_id, docker_image_tag, or helm_chart_version must be provided.'
+      )
+    }
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    const payload: Record<string, string> = {}
+    if (commitId) {
+      payload['commit_id'] = commitId
+    } else if (dockerImageTag) {
+      payload['docker_image_tag'] = dockerImageTag
+    } else if (helmChartVersion) {
+      payload['helm_chart_version'] = helmChartVersion
+    }
+
+    const url = `${baseUrl}/v1/environments/${environmentId}/services/${serviceId}/deploy`
+    core.debug(`Deploying to ${url} with payload: ${JSON.stringify(payload)}`)
+    await ky.post(url, { json: payload, headers: { Authorization: `Bearer ${apiToken}` } })
+
+    core.info('Deployment triggered successfully.')
   } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    }
   }
 }

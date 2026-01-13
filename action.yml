@@ -1,6 +1,6 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: LocalOps Deploy
+description: Github Action to trigger a deployment in LocalOps deliver
+author: LocalOps
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
@@ -9,15 +9,34 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
+  base_url:
+    description: The base URL of the API
+    required: false
+    default: 'https://sdk.localops.co'
+  api_token:
+    description: The API token for authentication
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: Your output description here
+  environment_id:
+    description: The environment ID for deployment
+    required: true
+  service_id:
+    description: The service ID for deployment
+    required: true
+  commit_id:
+    description:
+      The commit ID to deploy (one of commit_id, docker_image_tag, or
+      helm_chart_version must be provided)
+    required: false
+  docker_image_tag:
+    description:
+      The docker image tag to deploy (one of commit_id, docker_image_tag, or
+      helm_chart_version must be provided)
+    required: false
+  helm_chart_version:
+    description:
+      The helm chart version to deploy (one of commit_id, docker_image_tag, or
+      helm_chart_version must be provided)
+    required: false
 
 runs:
   using: node24
