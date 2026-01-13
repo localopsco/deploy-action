@@ -1,0 +1,6 @@
+'*.{md}':
+  - prettier --write
+
+'*.{js,ts}':
+  - oxlint --fix
+  - prettier --write

@@ -18,23 +18,24 @@ steps:
       commit_id: 'sha-789'
       # docker_image_tag: 'v1.0.0'
       # helm_chart_version: '1.2.3'
-      
+
       # Optional
-      # base_url: 'https://sdk.localops.co' 
+      # base_url: 'https://sdk.localops.co'
 ```
 
 ## Inputs
 
-| Input | Description | Required | Default |
-| --- | --- | --- | --- |
-| `environment_id` | The environment ID for deployment | **Yes** | |
-| `service_id` | The service ID for deployment | **Yes** | |
-| `commit_id` | The commit ID to deploy | No* | |
-| `docker_image_tag` | The docker image tag to deploy | No* | |
-| `helm_chart_version` | The helm chart version to deploy | No* | |
-| `base_url` | The base URL of the API | No | `https://sdk.localops.co` |
+| Input                | Description                       | Required | Default                   |
+| -------------------- | --------------------------------- | -------- | ------------------------- |
+| `environment_id`     | The environment ID for deployment | **Yes**  |                           |
+| `service_id`         | The service ID for deployment     | **Yes**  |                           |
+| `commit_id`          | The commit ID to deploy           | No\*     |                           |
+| `docker_image_tag`   | The docker image tag to deploy    | No\*     |                           |
+| `helm_chart_version` | The helm chart version to deploy  | No\*     |                           |
+| `base_url`           | The base URL of the API           | No       | `https://sdk.localops.co` |
 
-\* **Note**: Exactly one of `commit_id`, `docker_image_tag`, or `helm_chart_version` must be provided.
+\* **Note**: Exactly one of `commit_id`, `docker_image_tag`, or `helm_chart_version` must be
+provided.
 
 ## Development
 

@@ -13,9 +13,7 @@ export async function run(): Promise<void> {
     const helmChartVersion = core.getInput('helm_chart_version')
 
     if (!commitId && !dockerImageTag && !helmChartVersion) {
-      throw new Error(
-        'One of commit_id, docker_image_tag, or helm_chart_version must be provided.'
-      )
+      throw new Error('One of commit_id, docker_image_tag, or helm_chart_version must be provided.')
     }
 
     const payload: Record<string, string> = {}
@@ -29,7 +27,10 @@ export async function run(): Promise<void> {
 
     const url = `${baseUrl}/v1/environments/${environmentId}/services/${serviceId}/deploy`
     core.debug(`Deploying to ${url} with payload: ${JSON.stringify(payload)}`)
-    await ky.post(url, { json: payload, headers: { Authorization: `Bearer ${apiToken}` } })
+    await ky.post(url, {
+      json: payload,
+      headers: { Authorization: `Bearer ${apiToken}` }
+    })
 
     core.info('Deployment triggered successfully.')
   } catch (error) {

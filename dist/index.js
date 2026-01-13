@@ -28351,7 +28351,10 @@ async function run() {
         }
         const url = `${baseUrl}/v1/environments/${environmentId}/services/${serviceId}/deploy`;
         coreExports.debug(`Deploying to ${url} with payload: ${JSON.stringify(payload)}`);
-        await ky.post(url, { json: payload, headers: { Authorization: `Bearer ${apiToken}` } });
+        await ky.post(url, {
+            json: payload,
+            headers: { Authorization: `Bearer ${apiToken}` }
+        });
         coreExports.info('Deployment triggered successfully.');
     }
     catch (error) {

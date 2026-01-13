@@ -38,7 +38,6 @@ describe('Action Main', () => {
     expect(core.setFailed).toHaveBeenCalledWith('Input required and not supplied: api_token')
   })
 
-
   it('fails if no body input is provided', async () => {
     core.getInput.mockImplementation((name) => {
       if (name === 'environment_id') return 'e_1'
@@ -67,7 +66,10 @@ describe('Action Main', () => {
 
     expect(mocks.post).toHaveBeenCalledWith(
       'https://sdk.localops.co/v1/environments/e_1/services/s_1/deploy',
-      { json: { commit_id: 'c_1' }, headers: { Authorization: 'Bearer test_token' } }
+      {
+        json: { commit_id: 'c_1' },
+        headers: { Authorization: 'Bearer test_token' }
+      }
     )
     expect(core.info).toHaveBeenCalledWith('Deployment triggered successfully.')
   })
@@ -86,7 +88,10 @@ describe('Action Main', () => {
 
     expect(mocks.post).toHaveBeenCalledWith(
       'https://sdk.localops.co/v1/environments/e_1/services/s_1/deploy',
-      { json: { docker_image_tag: 'd_1' }, headers: { Authorization: 'Bearer test_token' } }
+      {
+        json: { docker_image_tag: 'd_1' },
+        headers: { Authorization: 'Bearer test_token' }
+      }
     )
   })
 
@@ -104,7 +109,10 @@ describe('Action Main', () => {
 
     expect(mocks.post).toHaveBeenCalledWith(
       'https://sdk.localops.co/v1/environments/e_1/services/s_1/deploy',
-      { json: { helm_chart_version: 'h_1' }, headers: { Authorization: 'Bearer test_token' } }
+      {
+        json: { helm_chart_version: 'h_1' },
+        headers: { Authorization: 'Bearer test_token' }
+      }
     )
   })
 
@@ -122,7 +130,10 @@ describe('Action Main', () => {
 
     expect(mocks.post).toHaveBeenCalledWith(
       'https://api.localops.co/v1/environments/e_1/services/s_1/deploy',
-      { json: { commit_id: 'c_1' }, headers: { Authorization: 'Bearer test_token' } }
+      {
+        json: { commit_id: 'c_1' },
+        headers: { Authorization: 'Bearer test_token' }
+      }
     )
   })
 

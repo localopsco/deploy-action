@@ -24,18 +24,18 @@ inputs:
     required: true
   commit_id:
     description:
-      The commit ID to deploy (one of commit_id, docker_image_tag, or
-      helm_chart_version must be provided)
+      The commit ID to deploy (one of commit_id, docker_image_tag, or helm_chart_version must be
+      provided)
     required: false
   docker_image_tag:
     description:
-      The docker image tag to deploy (one of commit_id, docker_image_tag, or
-      helm_chart_version must be provided)
+      The docker image tag to deploy (one of commit_id, docker_image_tag, or helm_chart_version must
+      be provided)
     required: false
   helm_chart_version:
     description:
-      The helm chart version to deploy (one of commit_id, docker_image_tag, or
-      helm_chart_version must be provided)
+      The helm chart version to deploy (one of commit_id, docker_image_tag, or helm_chart_version
+      must be provided)
     required: false
 
 runs:
