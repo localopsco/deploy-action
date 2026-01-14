@@ -116,8 +116,8 @@ Deploy a specific Helm chart version:
   uses: localopsco/deploy-action@v0
   with:
     api_token: ${{ secrets.LOCALOPS_API_TOKEN }}
-    environment_id: 'env-123'
-    service_id: 'svc-456'
+    environment_id: ${{ vars.ENVIRONMENT_ID }}
+    service_id: ${{ vars.SERVICE_ID }}
     helm_chart_version: '1.2.3'
 ```
 
