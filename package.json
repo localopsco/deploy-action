@@ -41,8 +41,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^2.0.2",
-    "ky": "^1.14.2"
+    "@actions/core": "^2.0.3",
+    "ky": "^1.14.3"
   },
   "devDependencies": {
     "@github/local-action": "^6.0.2",
