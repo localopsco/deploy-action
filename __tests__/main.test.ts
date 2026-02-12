@@ -139,6 +139,23 @@ describe('Action Main', () => {
     )
   })
 
+  it('fails if preview is enabled without commit_id', async () => {
+    core.getInput.mockImplementation((name: string) => {
+      if (name === 'environment_id') return 'e_1'
+      if (name === 'service_id') return 's_1'
+      if (name === 'docker_image_tag') return 'd_1'
+      if (name === 'api_token') return 'test_token'
+      return ''
+    })
+    core.getBooleanInput.mockReturnValue(true)
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'commit_id is required for preview deployments'
+    )
+  })
+
   it('handles ky errors', async () => {
     core.getInput.mockImplementation((name) => {
       if (name === 'environment_id') return 'e_1'

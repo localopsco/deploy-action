@@ -37,6 +37,9 @@ inputs:
       The helm chart version to deploy (one of commit_id, docker_image_tag, or
       helm_chart_version must be provided)
     required: false
+  preview:
+    description: Whether to create a preview deployment for the PR
+    required: false
 
 runs:
   using: node24

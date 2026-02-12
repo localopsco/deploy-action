@@ -1,9 +1,11 @@
 import * as core from '@actions/core'
 import ky from 'ky'
+import * as github from '@actions/github'
 
 export async function run(): Promise<void> {
   try {
     const baseUrl = core.getInput('base_url')
+    const preview = core.getBooleanInput('preview', { required: false })
     const environmentId = core.getInput('environment_id', { required: true })
     const serviceId = core.getInput('service_id', { required: true })
     const apiToken = core.getInput('api_token', { required: true })
@@ -18,13 +20,32 @@ export async function run(): Promise<void> {
       )
     }
 
-    const payload: Record<string, string> = {}
+    // if preview is true, then commitId is required
+    if (preview && !commitId) {
+      throw new Error('commit_id is required for preview deployments')
+    }
+
+    const payload: Record<string, string | number> = {}
     if (commitId) {
       payload['commit_id'] = commitId
     } else if (dockerImageTag) {
       payload['docker_image_tag'] = dockerImageTag
     } else if (helmChartVersion) {
       payload['helm_chart_version'] = helmChartVersion
+    }
+
+    // if preview, get the PR number and branch name and add to payload
+    if (preview) {
+      // fill here
+      const isPR = github.context.eventName === 'pull_request'
+      if (isPR) {
+        const prNumber = github.context.payload.pull_request?.number
+        const branchName = github.context.payload.pull_request?.head.ref
+        if (prNumber && branchName) {
+          payload['pr_number'] = prNumber
+          payload['branch_name'] = branchName
+        }
+      }
     }
 
     const url = `${baseUrl}/v1/environments/${environmentId}/services/${serviceId}/deploy`
