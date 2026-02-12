@@ -27,10 +27,14 @@ GitHub Action to trigger deployments in [LocalOps Deliver](https://localops.co).
 | `commit_id`          | Git commit SHA to deploy     | ⚡       |                           |
 | `docker_image_tag`   | Docker image tag to deploy   | ⚡       |                           |
 | `helm_chart_version` | Helm chart version to deploy | ⚡       |                           |
+| `preview`            | Create a preview deployment  | ❌       |                           |
 | `base_url`           | LocalOps API base URL        | ❌       | `https://sdk.localops.co` |
 
 > **Note**: Exactly one of `commit_id`, `docker_image_tag`, or
 > `helm_chart_version` must be provided (marked with ⚡).
+
+> **Preview**: When `preview` is set to `true`, `commit_id` is required. Docker
+> image and Helm chart based preview deployments are not yet supported.
 
 ## Examples
 
@@ -120,6 +124,39 @@ Deploy a specific Helm chart version:
     service_id: ${{ vars.SERVICE_ID }}
     helm_chart_version: '1.2.3'
 ```
+
+### Deploy Preview Environment
+
+Create a preview environment for each pull request. This is only supported in PR
+workflows and requires `commit_id`:
+
+```yaml
+name: Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy Preview
+        uses: localopsco/deploy-action@v0
+        with:
+          api_token: ${{ secrets.LOCALOPS_API_TOKEN }}
+          environment_id: ${{ vars.ENVIRONMENT_ID }}
+          service_id: ${{ vars.SERVICE_ID }}
+          commit_id: ${{ github.event.pull_request.head.sha }}
+          preview: true
+```
+
+> **Note**: Preview deployments must run in a `pull_request` workflow. The
+> action automatically picks up the PR number and branch name from the workflow
+> context.
 
 ## Authentication
 
