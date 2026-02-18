@@ -40,6 +40,7 @@ inputs:
   preview:
     description: Whether to create a preview deployment for the PR
     required: false
+    default: false
 
 runs:
   using: node24
