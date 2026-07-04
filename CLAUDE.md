@@ -30,13 +30,13 @@ Deliver API and optionally attaches PR metadata for preview deployments.
 
 This is a single-purpose action with a very small surface area:
 
-```
-action.yml            # Action metadata: inputs, branding, runs.using: node24, entrypoint dist/index.js
-src/index.ts           # Entrypoint: imports and invokes run() from main.ts
-src/main.ts            # All action logic lives here
-dist/index.js           # Rollup-bundled output that GitHub Actions actually runs (must be committed)
-__tests__/main.test.ts  # Vitest unit tests for main.ts (mocks @actions/core and ky)
-__fixtures__/core.ts    # Hand-rolled vi.fn()-based mock of @actions/core used by tests
+```text
+action.yml              # Action metadata: inputs, branding, runs.using: node24
+src/index.ts            # Entrypoint: imports and invokes run() from main.ts
+src/main.ts             # All action logic lives here
+dist/index.js           # Rollup-bundled output GitHub Actions runs (committed)
+__tests__/main.test.ts  # Vitest unit tests for main.ts (mocks core and ky)
+__fixtures__/core.ts    # Hand-rolled mock of @actions/core used by tests
 ```
 
 ### Runtime flow (`src/main.ts`)
@@ -45,16 +45,16 @@ __fixtures__/core.ts    # Hand-rolled vi.fn()-based mock of @actions/core used b
    `https://sdk.localops.co`), `preview` (boolean), `environment_id` (required),
    `service_id` (required), `api_token` (required), and exactly one of
    `commit_id` / `docker_image_tag` / `helm_chart_version`.
-2. Validate: fail if none of `commit_id` / `docker_image_tag` /
+1. Validate: fail if none of `commit_id` / `docker_image_tag` /
    `helm_chart_version` is set; fail if `preview` is true but `commit_id` is not
    set.
-3. Build a JSON payload with whichever deploy target was provided.
-4. If `preview` is true and the workflow event is `pull_request` (via
+1. Build a JSON payload with whichever deploy target was provided.
+1. If `preview` is true and the workflow event is `pull_request` (via
    `@actions/github` context), add `pr_number` and `branch_name` to the payload
    from `github.context.payload.pull_request`.
-5. `POST {base_url}/v1/environments/{environment_id}/services/{service_id}/deploy`
+1. `POST {base_url}/v1/environments/{environment_id}/services/{service_id}/deploy`
    with `Authorization: Bearer {api_token}` using `ky`.
-6. On success, `core.info('Deployment triggered successfully.')`. On any thrown
+1. On success, `core.info('Deployment triggered successfully.')`. On any thrown
    `Error`, `core.setFailed(error.message)` (the action never throws past
    `run()`).
 
@@ -139,11 +139,11 @@ npm run local-action
 
 1. Change input/output contracts in `action.yml` first, then implement in
    `src/main.ts`.
-2. Update `README.md` (Inputs table and examples) to match.
-3. Add/update tests in `__tests__/main.test.ts`.
-4. Run `npm run all` locally (format, lint, test, coverage, package) before
+1. Update `README.md` (Inputs table and examples) to match.
+1. Add/update tests in `__tests__/main.test.ts`.
+1. Run `npm run all` locally (format, lint, test, coverage, package) before
    committing.
-5. Commit the regenerated `dist/index.js` and `dist/index.js.map` — CI's
+1. Commit the regenerated `dist/index.js` and `dist/index.js.map` — CI's
    `check-dist.yml` will fail the build otherwise.
-6. Bump `version` in `package.json` and use `script/release` when cutting a new
+1. Bump `version` in `package.json` and use `script/release` when cutting a new
    tagged release.
