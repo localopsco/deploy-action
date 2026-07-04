@@ -1,18 +1,27 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project Overview
 
-**deploy-action** is a GitHub Action (published as `localopsco/deploy-action`) that triggers a deployment in [LocalOps Deliver](https://localops.co). It is a thin HTTP client: given an environment, a service, and one of a commit SHA / Docker image tag / Helm chart version, it POSTs a deploy request to the LocalOps Deliver API and optionally attaches PR metadata for preview deployments.
+**deploy-action** is a GitHub Action (published as `localopsco/deploy-action`)
+that triggers a deployment in [LocalOps Deliver](https://localops.co). It is a
+thin HTTP client: given an environment, a service, and one of a commit SHA /
+Docker image tag / Helm chart version, it POSTs a deploy request to the LocalOps
+Deliver API and optionally attaches PR metadata for preview deployments.
 
 ## Tech Stack
 
-- **Language:** TypeScript (Node.js >= 24, pinned via `.node-version` / `mise.toml` to `24.12.0`)
+- **Language:** TypeScript (Node.js >= 24, pinned via `.node-version` /
+  `mise.toml` to `24.12.0`)
 - **Action runtime:** `node24` (see `runs.using` in `action.yml`)
 - **HTTP client:** `ky`
-- **Actions SDK:** `@actions/core` (inputs/outputs/logging), `@actions/github` (workflow/PR context)
-- **Bundler:** Rollup (`rollup.config.ts`) with `@rollup/plugin-typescript`, `@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs` — bundles to a single ESM file, `dist/index.js`, which is what GitHub Actions actually executes
+- **Actions SDK:** `@actions/core` (inputs/outputs/logging), `@actions/github`
+  (workflow/PR context)
+- **Bundler:** Rollup (`rollup.config.ts`) with `@rollup/plugin-typescript`,
+  `@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs` — bundles to a single
+  ESM file, `dist/index.js`, which is what GitHub Actions actually executes
 - **Test runner:** Vitest (with `@vitest/coverage-v8` for coverage)
 - **Lint/format:** oxlint + Prettier
 - **Git hooks:** Husky + lint-staged (`.husky/pre-commit`, `.lintstagedrc.yml`)
@@ -32,20 +41,36 @@ __fixtures__/core.ts    # Hand-rolled vi.fn()-based mock of @actions/core used b
 
 ### Runtime flow (`src/main.ts`)
 
-1. Read inputs via `@actions/core`: `base_url` (default `https://sdk.localops.co`), `preview` (boolean), `environment_id` (required), `service_id` (required), `api_token` (required), and exactly one of `commit_id` / `docker_image_tag` / `helm_chart_version`.
-2. Validate: fail if none of `commit_id` / `docker_image_tag` / `helm_chart_version` is set; fail if `preview` is true but `commit_id` is not set.
+1. Read inputs via `@actions/core`: `base_url` (default
+   `https://sdk.localops.co`), `preview` (boolean), `environment_id` (required),
+   `service_id` (required), `api_token` (required), and exactly one of
+   `commit_id` / `docker_image_tag` / `helm_chart_version`.
+2. Validate: fail if none of `commit_id` / `docker_image_tag` /
+   `helm_chart_version` is set; fail if `preview` is true but `commit_id` is not
+   set.
 3. Build a JSON payload with whichever deploy target was provided.
-4. If `preview` is true and the workflow event is `pull_request` (via `@actions/github` context), add `pr_number` and `branch_name` to the payload from `github.context.payload.pull_request`.
-5. `POST {base_url}/v1/environments/{environment_id}/services/{service_id}/deploy` with `Authorization: Bearer {api_token}` using `ky`.
-6. On success, `core.info('Deployment triggered successfully.')`. On any thrown `Error`, `core.setFailed(error.message)` (the action never throws past `run()`).
+4. If `preview` is true and the workflow event is `pull_request` (via
+   `@actions/github` context), add `pr_number` and `branch_name` to the payload
+   from `github.context.payload.pull_request`.
+5. `POST {base_url}/v1/environments/{environment_id}/services/{service_id}/deploy`
+   with `Authorization: Bearer {api_token}` using `ky`.
+6. On success, `core.info('Deployment triggered successfully.')`. On any thrown
+   `Error`, `core.setFailed(error.message)` (the action never throws past
+   `run()`).
 
 ### Inputs / outputs contract
 
-Defined in `action.yml` and documented in `README.md`. There are no declared `outputs`. Keep `action.yml`, `README.md`, and `__tests__/main.test.ts` in sync whenever inputs change.
+Defined in `action.yml` and documented in `README.md`. There are no declared
+`outputs`. Keep `action.yml`, `README.md`, and `__tests__/main.test.ts` in sync
+whenever inputs change.
 
 ### Distribution model
 
-GitHub Actions run the **committed** `dist/index.js`, not `src/`. Any change to `src/` requires `npm run package` (or `npm run bundle`) to regenerate `dist/index.js`/`dist/index.js.map`, and both must be committed together. CI enforces this via `.github/workflows/check-dist.yml` (rebuilds `dist/` and fails if it differs from what's committed).
+GitHub Actions run the **committed** `dist/index.js`, not `src/`. Any change to
+`src/` requires `npm run package` (or `npm run bundle`) to regenerate
+`dist/index.js`/`dist/index.js.map`, and both must be committed together. CI
+enforces this via `.github/workflows/check-dist.yml` (rebuilds `dist/` and fails
+if it differs from what's committed).
 
 ## Common Commands
 
@@ -80,25 +105,45 @@ npm run local-action
 
 ## CI / Repo Automation
 
-- **`.github/workflows/ci.yml`** — on PRs to `main` and pushes to `main`: `npm ci`, `npm run format:check`, `npm run lint`, `npm run ci-test`.
-- **`.github/workflows/check-dist.yml`** — verifies the committed `dist/` matches a fresh `npm run package` build.
-- **`.github/workflows/licensed.yml`** — runs `licensed` (config in `.licensed.yml`) to check dependency license compliance; allowed licenses include MIT, Apache-2.0, BSD-2/3-Clause, ISC, CC0-1.0.
-- **`.github/workflows/linter.yml`** — general linting (e.g. YAML/Markdown via `.yaml-lint.yml` / `.markdown-lint.yml`), plus `actionlint` (config in `actionlint.yml`, which ignores the `node24` runner-name warning since it's newer than actionlint's known list).
+- **`.github/workflows/ci.yml`** — on PRs to `main` and pushes to `main`:
+  `npm ci`, `npm run format:check`, `npm run lint`, `npm run ci-test`.
+- **`.github/workflows/check-dist.yml`** — verifies the committed `dist/`
+  matches a fresh `npm run package` build.
+- **`.github/workflows/licensed.yml`** — runs `licensed` (config in
+  `.licensed.yml`) to check dependency license compliance; allowed licenses
+  include MIT, Apache-2.0, BSD-2/3-Clause, ISC, CC0-1.0.
+- **`.github/workflows/linter.yml`** — general linting (e.g. YAML/Markdown via
+  `.yaml-lint.yml` / `.markdown-lint.yml`), plus `actionlint` (config in
+  `actionlint.yml`, which ignores the `node24` runner-name warning since it's
+  newer than actionlint's known list).
 - **`.github/workflows/codeql-analysis.yml`** — CodeQL security scanning.
-- **`.checkov.yml`** — Checkov static analysis config (skips `coverage` and `node_modules`).
-- **`script/release`** — helper shell script to cut a new release: tags a version, updates the major version tag (e.g. `v1`), and pushes tags. Reminds you to bump `version` in `package.json` first.
+- **`.checkov.yml`** — Checkov static analysis config (skips `coverage` and
+  `node_modules`).
+- **`script/release`** — helper shell script to cut a new release: tags a
+  version, updates the major version tag (e.g. `v1`), and pushes tags. Reminds
+  you to bump `version` in `package.json` first.
 
 ## Testing Notes
 
-- Tests live in `__tests__/main.test.ts` and mock both `@actions/core` (via the hand-written fixture in `__fixtures__/core.ts`) and `ky` (via `vi.mock`).
-- `@actions/github` is not mocked in the current tests — preview/PR-context behavior is only exercised through the default (non-`pull_request`) event context, so `pr_number`/`branch_name` attachment isn't directly covered by a test today.
-- When adding new inputs or behavior branches in `src/main.ts`, extend `__tests__/main.test.ts` and, if `@actions/core` gains new mocked methods, extend `__fixtures__/core.ts`.
+- Tests live in `__tests__/main.test.ts` and mock both `@actions/core` (via the
+  hand-written fixture in `__fixtures__/core.ts`) and `ky` (via `vi.mock`).
+- `@actions/github` is not mocked in the current tests — preview/PR-context
+  behavior is only exercised through the default (non-`pull_request`) event
+  context, so `pr_number`/`branch_name` attachment isn't directly covered by a
+  test today.
+- When adding new inputs or behavior branches in `src/main.ts`, extend
+  `__tests__/main.test.ts` and, if `@actions/core` gains new mocked methods,
+  extend `__fixtures__/core.ts`.
 
 ## When Modifying This Action
 
-1. Change input/output contracts in `action.yml` first, then implement in `src/main.ts`.
+1. Change input/output contracts in `action.yml` first, then implement in
+   `src/main.ts`.
 2. Update `README.md` (Inputs table and examples) to match.
 3. Add/update tests in `__tests__/main.test.ts`.
-4. Run `npm run all` locally (format, lint, test, coverage, package) before committing.
-5. Commit the regenerated `dist/index.js` and `dist/index.js.map` — CI's `check-dist.yml` will fail the build otherwise.
-6. Bump `version` in `package.json` and use `script/release` when cutting a new tagged release.
+4. Run `npm run all` locally (format, lint, test, coverage, package) before
+   committing.
+5. Commit the regenerated `dist/index.js` and `dist/index.js.map` — CI's
+   `check-dist.yml` will fail the build otherwise.
+6. Bump `version` in `package.json` and use `script/release` when cutting a new
+   tagged release.
