@@ -103,7 +103,7 @@ npm run all
 npm run local-action
 ```
 
-## CI / Repo Automation
+## CI / Repository Automation
 
 - **`.github/workflows/ci.yml`** — on PRs to `main` and pushes to `main`:
   `npm ci`, `npm run format:check`, `npm run lint`, `npm run ci-test`.
