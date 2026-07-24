@@ -18,7 +18,11 @@ Deliver API and optionally attaches PR metadata for preview deployments.
 - **Action runtime:** `node24` (see `runs.using` in `action.yml`)
 - **HTTP client:** `ky`
 - **Actions SDK:** `@actions/core` (inputs/outputs/logging), `@actions/github`
-  (workflow/PR context)
+  (workflow/PR context) — note `@actions/github` is **not** declared in
+  `package.json`'s `dependencies` (only `@actions/core` and `ky` are); it
+  resolves today only because it's a transitive devDependency of
+  `@github/local-action`. If that chain ever changes, `src/main.ts`'s import
+  will break with no direct dependency to fall back on.
 - **Bundler:** Rollup (`rollup.config.ts`) with `@rollup/plugin-typescript`,
   `@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs` — bundles to a single
   ESM file, `dist/index.js`, which is what GitHub Actions actually executes
@@ -108,10 +112,15 @@ npm run local-action
 - **`.github/workflows/ci.yml`** — on PRs to `main` and pushes to `main`:
   `npm ci`, `npm run format:check`, `npm run lint`, `npm run ci-test`.
 - **`.github/workflows/check-dist.yml`** — verifies the committed `dist/`
-  matches a fresh `npm run package` build.
+  matches a fresh `npm run bundle` build (`format:write` + `package`, not bare
+  `npm run package`).
 - **`.github/workflows/licensed.yml`** — runs `licensed` (config in
   `.licensed.yml`) to check dependency license compliance; allowed licenses
-  include MIT, Apache-2.0, BSD-2/3-Clause, ISC, CC0-1.0.
+  include MIT, Apache-2.0, BSD-2/3-Clause, ISC, CC0-1.0, plus a catch-all
+  `other`. Its `pull_request`/`push` triggers are commented out in the
+  workflow file — it currently only runs on manual `workflow_dispatch` (which
+  also refreshes and commits `.licenses/` cache files), so it is **not** part
+  of the automatic per-PR CI gate.
 - **`.github/workflows/linter.yml`** — general linting (e.g. YAML/Markdown via
   `.yaml-lint.yml` / `.markdown-lint.yml`), plus `actionlint` (config in
   `actionlint.yml`, which ignores the `node24` runner-name warning since it's
