@@ -135,6 +135,19 @@ npm run local-action
   `__tests__/main.test.ts` and, if `@actions/core` gains new mocked methods,
   extend `__fixtures__/core.ts`.
 
+## Notes
+
+- **`.github/copilot-instructions.md` and `.github/prompts/*.prompt.md` are
+  stale boilerplate** carried over from the upstream `actions/typescript-action`
+  template: they reference `jest`, `eslint.config.mjs`, `jest.config.js`, and a
+  `.devcontainer/` directory, none of which exist in this repo. The actual test
+  runner is **Vitest** and the actual linter is **oxlint** (see Tech Stack
+  above) — follow this file's commands, not those docs, when running or writing
+  tests.
+- `.github/dependabot.yml` runs weekly on both `github-actions` and `npm`
+  ecosystems, grouping minor/patch bumps (`actions-minor`, `npm-development`,
+  `npm-production`) into single PRs.
+
 ## When Modifying This Action
 
 1. Change input/output contracts in `action.yml` first, then implement in
