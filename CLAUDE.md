@@ -140,8 +140,8 @@ npm run local-action
 - **`.github/copilot-instructions.md` and `.github/prompts/*.prompt.md` are
   stale boilerplate** carried over from the upstream `actions/typescript-action`
   template: they reference `jest`, `eslint.config.mjs`, `jest.config.js`, and a
-  `.devcontainer/` directory, none of which exist in this repository. The actual test
-  runner is **Vitest** and the actual linter is **oxlint** (see Tech Stack
+  `.devcontainer/` directory, none of which exist in this repository. The actual
+  test runner is **Vitest** and the actual linter is **oxlint** (see Tech Stack
   above) — follow this file's commands, not those docs, when running or writing
   tests.
 - `.github/dependabot.yml` runs weekly on both `github-actions` and `npm`
