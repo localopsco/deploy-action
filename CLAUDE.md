@@ -18,7 +18,14 @@ Deliver API and optionally attaches PR metadata for preview deployments.
 - **Action runtime:** `node24` (see `runs.using` in `action.yml`)
 - **HTTP client:** `ky`
 - **Actions SDK:** `@actions/core` (inputs/outputs/logging), `@actions/github`
-  (workflow/PR context)
+  (workflow/PR context) — note `@actions/github` is imported in `src/main.ts`
+  but is **not** listed in `package.json`'s `dependencies`; it only resolves
+  because it's hoisted as a transitive `devDependency` (e.g. pulled in via
+  `@github/local-action`/`@actions/artifact`). This works today because
+  bundling happens with full `devDependencies` installed, but it's a latent
+  risk — if that transitive chain ever drops `@actions/github`, the build
+  breaks silently. If you touch dependencies, consider adding it explicitly
+  to `dependencies`.
 - **Bundler:** Rollup (`rollup.config.ts`) with `@rollup/plugin-typescript`,
   `@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs` — bundles to a single
   ESM file, `dist/index.js`, which is what GitHub Actions actually executes
