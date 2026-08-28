@@ -24,7 +24,11 @@ Deliver API and optionally attaches PR metadata for preview deployments.
   ESM file, `dist/index.js`, which is what GitHub Actions actually executes
 - **Test runner:** Vitest (with `@vitest/coverage-v8` for coverage)
 - **Lint/format:** oxlint + Prettier
-- **Git hooks:** Husky + lint-staged (`.husky/pre-commit`, `.lintstagedrc.yml`)
+- **Git hooks:** Husky + lint-staged. `.husky/pre-commit` runs `npm run package`
+  and stages the rebuilt `dist/` before running `lint-staged`
+  (`.lintstagedrc.yml`: Prettier on `*.{md,yml,yaml,json}`, oxlint --fix +
+  Prettier on `*.{js,ts}`) — so a local commit already keeps `dist/` current;
+  CI's `check-dist.yml` is the backstop for commits made another way
 
 ## Architecture
 
@@ -82,6 +86,9 @@ npm install
 npm test
 # Run tests once (used in CI)
 npm run ci-test
+# Run a single test (by name pattern) or a single file
+npx vitest run -t "deploys with commit_id"
+npx vitest run __tests__/main.test.ts
 # Run tests with coverage (writes badges/coverage.svg via make-coverage-badge)
 npm run coverage
 
@@ -122,6 +129,13 @@ npm run local-action
 - **`script/release`** — helper shell script to cut a new release: tags a
   version, updates the major version tag (e.g. `v1`), and pushes tags. Reminds
   you to bump `version` in `package.json` first.
+
+Note: `.github/copilot-instructions.md` is stale in places — it describes
+`jest.config.js`, `eslint.config.mjs`, and a `.devcontainer/` directory, none
+of which exist in this repo. The actual test runner is Vitest (`ci-test`) and
+the linter is oxlint; there is no dev container. Its general guidelines
+(dist/ up to date, README updated alongside behavior changes, focused PRs)
+still apply.
 
 ## Testing Notes
 
