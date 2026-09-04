@@ -147,3 +147,11 @@ npm run local-action
    `check-dist.yml` will fail the build otherwise.
 1. Bump `version` in `package.json` and use `script/release` when cutting a new
    tagged release.
+
+## Notes
+
+- `.github/copilot-instructions.md` predates this repo's move to Vitest and
+  oxlint: it still describes `jest.config.js`, `eslint.config.mjs`, and a
+  `.devcontainer/`, none of which exist here (tests run via Vitest per the
+  Common Commands above, linting via oxlint). Don't treat its tooling
+  references as current — its general coding/PR guidelines are still fine.
