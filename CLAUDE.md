@@ -18,7 +18,9 @@ Deliver API and optionally attaches PR metadata for preview deployments.
 - **Action runtime:** `node24` (see `runs.using` in `action.yml`)
 - **HTTP client:** `ky`
 - **Actions SDK:** `@actions/core` (inputs/outputs/logging), `@actions/github`
-  (workflow/PR context)
+  (workflow/PR context). Note `@actions/github` is imported by `src/main.ts` but
+  is **not** declared in `package.json`; it is only present transitively (a
+  `dev` entry in `package-lock.json`, pulled in by `@github/local-action`)
 - **Bundler:** Rollup (`rollup.config.ts`) with `@rollup/plugin-typescript`,
   `@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs` — bundles to a single
   ESM file, `dist/index.js`, which is what GitHub Actions actually executes
@@ -43,8 +45,9 @@ __fixtures__/core.ts    # Hand-rolled mock of @actions/core used by tests
 
 1. Read inputs via `@actions/core`: `base_url` (default
    `https://sdk.localops.co`), `preview` (boolean), `environment_id` (required),
-   `service_id` (required), `api_token` (required), and exactly one of
-   `commit_id` / `docker_image_tag` / `helm_chart_version`.
+   `service_id` (required), `api_token` (required), and one of
+   `commit_id` / `docker_image_tag` / `helm_chart_version` (only one is sent; if
+   several are set, precedence is commit, then image tag, then chart version).
 1. Validate: fail if none of `commit_id` / `docker_image_tag` /
    `helm_chart_version` is set; fail if `preview` is true but `commit_id` is not
    set.
