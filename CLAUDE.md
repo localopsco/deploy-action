@@ -18,13 +18,17 @@ Deliver API and optionally attaches PR metadata for preview deployments.
 - **Action runtime:** `node24` (see `runs.using` in `action.yml`)
 - **HTTP client:** `ky`
 - **Actions SDK:** `@actions/core` (inputs/outputs/logging), `@actions/github`
-  (workflow/PR context)
+  (workflow/PR context). Gotcha: `package.json` does not declare
+  `@actions/github`; it resolves only transitively (dev-only in the lockfile,
+  via `@github/local-action`), so a dependency cleanup can break the build
 - **Bundler:** Rollup (`rollup.config.ts`) with `@rollup/plugin-typescript`,
   `@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs` — bundles to a single
   ESM file, `dist/index.js`, which is what GitHub Actions actually executes
 - **Test runner:** Vitest (with `@vitest/coverage-v8` for coverage)
 - **Lint/format:** oxlint + Prettier
-- **Git hooks:** Husky + lint-staged (`.husky/pre-commit`, `.lintstagedrc.yml`)
+- **Git hooks:** Husky + lint-staged (`.husky/pre-commit`, `.lintstagedrc.yml`).
+  The pre-commit hook also runs `npm run package` and `git add dist`, so
+  commits regenerate `dist/` automatically
 
 ## Architecture
 
